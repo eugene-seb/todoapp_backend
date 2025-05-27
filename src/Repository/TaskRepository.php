@@ -4,40 +4,61 @@ namespace App\Repository;
 
 use App\Entity\Task;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @extends ServiceEntityRepository<Task>
  */
 class TaskRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        ManagerRegistry $registry
+    ) {
         parent::__construct($registry, Task::class);
     }
 
-    //    /**
-    //     * @return Task[] Returns an array of Task objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('t.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     *
+     * @param string $key
+     * @return Task[]
+     */
+    public function findByKey(string $key): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.title LIKE :key OR t.description LIKE :key ')
+            ->setParameter('key', '%' . $key . '%')
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?Task
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     *
+     * @param Task $task
+     * @return void
+     */
+    public function createTask(Task $task): void
+    {
+        if (!$task) {
+            throw new NotFoundHttpException("Task not found.");
+        }
+        $this->em->persist($task);
+        $this->em->flush();
+    }
+
+    public function updateTask(): void
+    {
+        $this->em->flush();
+    }
+
+    public function deleteTask(Task $task): void
+    {
+        if (!$task) {
+            throw new NotFoundHttpException("Task not found.");
+        }
+        $this->em->remove($task);
+        $this->em->flush();
+    }
 }
