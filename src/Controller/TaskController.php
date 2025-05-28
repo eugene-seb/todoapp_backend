@@ -33,9 +33,10 @@ final class TaskController extends AbstractController
     }
 
     #[Route(path: '/search_tasks', name: 'task_searchtasks', methods: ['GET'])]
-    public function searchTasks(string $key): JsonResponse
+    public function searchTasks(Request $request): JsonResponse
     {
         try {
+            $key = $request->query->get('key');
             return $this->json(
                 data: $this->taskService->searchTasks($key),
                 status: Response::HTTP_OK
