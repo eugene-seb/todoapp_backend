@@ -56,7 +56,7 @@ final class TaskControllerTest extends WebTestCase
 
         self::assertJson($this->client->getResponse()->getContent());
         $data = json_decode($this->client->getResponse()->getContent(), true,);
-dd($data);
+
         self::assertResponseIsSuccessful();
         self::assertNotEmpty($data);
     }
