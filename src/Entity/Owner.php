@@ -24,7 +24,7 @@ class Owner
     /**
      * @var Collection<int, Task>
      */
-    #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'owner', cascade: 'ALL', fetch: "EXTRA_LAZY")]
+    #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'owner', cascade: ['ALL'], fetch: "EXTRA_LAZY")]
     private Collection $tasks;
 
     public function __construct()

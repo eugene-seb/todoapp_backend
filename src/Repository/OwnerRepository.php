@@ -19,31 +19,13 @@ class OwnerRepository extends ServiceEntityRepository
     }
 
     /**
-     *
-     * @param string $username
-     * @return ?Owner
-     */
-    public function findByUsername(string $username): ?Owner
-    {
-        return $this->createQueryBuilder('o')
-            ->select('o')
-            ->where('o.username = :username')
-            ->setParameter('username', $username)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
-
-
-    /**
-     * Returns a random Owner from the database, or null if none exist.
+     * Returns a Owner from the database, or null if none exist.
      *
      * @return Owner|null
      */
-    public function findRandomOwner(): ?Owner
+    public function findOneOwner(): ?Owner
     {
         return $this->createQueryBuilder('o')
-            ->select('o')
-            ->orderBy('RAND()')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
