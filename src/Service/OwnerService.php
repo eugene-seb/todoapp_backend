@@ -24,17 +24,6 @@ class OwnerService
         );
     }
 
-    /**
-     * Look for a owner with a specific username
-     * 
-     * @param string $key
-     * @return ?Owner
-     */
-    public function searchOwner(string $username): ?Owner
-    {
-        return $this->ownerRepo->findByUsername($username);
-    }
-
     public function createOwner(OwnerDto $ownerDto): void
     {
         if ($ownerDto) {

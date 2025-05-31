@@ -44,7 +44,7 @@ class TaskService
     public function createTask(TaskDto $taskDto): void
     {
         if ($taskDto) {
-            $owner = $this->ownerRepo->find($taskDto->id);
+            $owner = $this->ownerRepo->find($taskDto->ownerId);
             if ($owner instanceof Owner) {
                 $task = TaskDto::parseToTask($taskDto, $owner);
                 $this->taskRepo->createTask($task);

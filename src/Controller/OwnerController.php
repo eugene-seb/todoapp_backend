@@ -32,23 +32,6 @@ final class OwnerController extends AbstractController
         }
     }
 
-    #[Route(path: '/search_owner', name: 'owner_searchowner', methods: ['GET'])]
-    public function searchOwners(Request $request): JsonResponse
-    {
-        try {
-            $username = $request->query->get('username');
-            return $this->json(
-                data: $this->ownerService->searchOwner($username),
-                status: Response::HTTP_OK
-            );
-        } catch (\Throwable $throwable) {
-            return $this->json(
-                data: ['error' => $throwable->getMessage()],
-                status: Response::HTTP_BAD_REQUEST
-            );
-        }
-    }
-
     #[Route(path: '/create_owner', name: 'owner_createowner', methods: ['POST'])]
     public function createOwner(Request $request): JsonResponse
     {

@@ -26,8 +26,9 @@ class AppFixtures extends Fixture
         }
 
         $manager->flush(); // I need to do that in order for Doctrine to generate the ID of Doctrine
+
         for ($i = 0; $i < 20; $i++) {
-            $owner = $this->ownerRepo->findRandomOwner();
+            $owner = $this->ownerRepo->findOneOwner();
 
             $task = new Task();
             $task->setTitle($faker->title())

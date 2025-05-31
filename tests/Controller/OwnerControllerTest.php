@@ -6,6 +6,9 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+
+    // Another entity connnected to Owner (User), Tests + use Faker for the data ---Security
+
 /**
  *   In order to test this class, execute these commands so that the test database is reinitialized:
     php .\bin\console doctrine:database:drop --env=test --force
@@ -13,9 +16,9 @@ use Symfony\Component\HttpFoundation\Response;
     php .\bin\console make:migration
     php .\bin\console doctrine:migrations:migrate --env=test
     php bin/console doctrine:fixtures:load --env=test
-    php .\bin\phpunit .\tests\Controller\TaskControllerTest.php
+    php .\bin\phpunit .\tests\Controller\OwnerControllerTest.php
  */
-final class TaskControllerTest extends WebTestCase
+final class OwnerControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
 
@@ -24,53 +27,32 @@ final class TaskControllerTest extends WebTestCase
         $this->client = static::createClient();
     }
 
-    public function test_createTask(): void
+    public function test_createOwner(): void
     {
-        $taskDtoEncoded = json_encode([
-            'title' => 'Eugene New Task',
-            'description' => 'This is a test task',
-            'status' => true,
-            'priority' => 'High',
-            'ownerId' => 27
+        $ownerDtoEncoded = json_encode([
+            'username' => 'Eugene',
+            'password' => 'fhjzkvvjzejk@'
         ]);
 
         $this->client->request(
             method: 'POST',
-            uri: '/task/create_task',
+            uri: '/owner/create_owner',
             parameters: [],
             files: [],
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: $taskDtoEncoded
+            content: $ownerDtoEncoded
         );
 
         $this->assertResponseStatusCodeSame(expectedCode: Response::HTTP_CREATED);
         $this->assertJsonStringEqualsJsonString(
-            json_encode(['message' => 'Task created succesfully.']),
+            json_encode(['message' => 'Owner created succesfully.']),
             $this->client->getResponse()->getContent()
         );
     }
 
-    public function test_getAllTasks(): void
+    public function test_getAllOwners(): void
     {
-        $this->client->request('GET', '/task/all_tasks');
-
-        self::assertJson($this->client->getResponse()->getContent());
-        $data = json_decode($this->client->getResponse()->getContent(), true,);
-dd($data);
-        self::assertResponseIsSuccessful();
-        self::assertNotEmpty($data);
-    }
-
-    public function test_searchTasks(): void
-    {
-        $this->client->request(
-            method: 'GET',
-            uri: '/task/search_tasks',
-            parameters: ['key' => 'Eugene'],
-            files: [],
-            server: ['CONTENT_TYPE' => 'application/json'],
-            content: null
-        );
+        $this->client->request('GET', '/owner/all_owners');
 
         self::assertJson($this->client->getResponse()->getContent());
         $data = json_decode($this->client->getResponse()->getContent(), true,);
@@ -79,38 +61,35 @@ dd($data);
         self::assertNotEmpty($data);
     }
 
-    public function test_updateTask(): void
+    public function test_updateOwner(): void
     {
-        $taskDtoEncoded = json_encode([
-            'title' => 'Eugene Update',
-            'description' => 'Update: This is a test task',
-            'status' => false,
-            'priority' => 'High',
-            'ownerId' => 27
+        $ownerDtoEncoded = json_encode([
+            'username' => 'ETOUNDI',
+            'password' => 'fhjzkvvjzejk@'
         ]);
 
         $this->client->request(
             method: 'PUT',
-            uri: '/task/update_task/1215',
+            uri: '/owner/update_owner/27',
             parameters: [],
             files: [],
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: $taskDtoEncoded
+            content: $ownerDtoEncoded
         );
 
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertArrayHasKey('message', $responseData);
-        $this->assertEquals('Task updated succesfully.', $responseData['message']);
+        $this->assertEquals('Owner updated succesfully.', $responseData['message']);
     }
 
-    public function test_deleteTask(): void
+    public function test_deleteOwner(): void
     {
-        $this->client->request('DELETE', '/task/delete_task/1218');
+        $this->client->request('DELETE', '/owner/delete_owner/1');
 
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertArrayHasKey('message', $responseData);
-        $this->assertEquals('Task deleted.', $responseData['message']);
+        $this->assertEquals('Owner deleted.', $responseData['message']);
     }
 }
