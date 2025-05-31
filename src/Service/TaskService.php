@@ -3,11 +3,17 @@
 namespace App\Service;
 
 use App\Dto\TaskDto;
+use App\Entity\Owner;
+use App\Entity\Task;
+use App\Repository\OwnerRepository;
 use App\Repository\TaskRepository;
 
 class TaskService
 {
-    public function __construct(private TaskRepository $taskRepo) {}
+    public function __construct(
+        private readonly TaskRepository $taskRepo,
+        private readonly OwnerRepository $ownerRepo,
+    ) {}
 
     /**
      *
@@ -37,9 +43,14 @@ class TaskService
 
     public function createTask(TaskDto $taskDto): void
     {
-        if ($taskDto != null) {
-            $task = TaskDto::parseToTask($taskDto);
-            $this->taskRepo->createTask($task);
+        if ($taskDto) {
+            $owner = $this->ownerRepo->find($taskDto->id);
+            if ($owner instanceof Owner) {
+                $task = TaskDto::parseToTask($taskDto, $owner);
+                $this->taskRepo->createTask($task);
+            } else {
+                throw throw new \InvalidArgumentException('The task you are trying to create has no owner.');
+            }
         } else {
             throw throw new \InvalidArgumentException('The task you are trying to create is not valid.');
         }
@@ -48,7 +59,7 @@ class TaskService
     public function updateTask(int $id, TaskDto $taskDto): void
     {
         $task = $this->taskRepo->find($id);
-        if ($task) {
+        if ($task instanceof Task) {
             $task->setTitle($taskDto->title)
                 ->setDescription($taskDto->description)
                 ->setStatus($taskDto->status)
@@ -58,11 +69,15 @@ class TaskService
         }
     }
 
-    public function deleteTask(int $id)
+    public function deleteTask(int $taskId)
     {
-        $task = $this->taskRepo->find($id);
-        if ($task) {
-            $this->taskRepo->deleteTask($task);
+        $task = $this->taskRepo->find($taskId);
+        if ($task instanceof Task) {
+            $owner = $this->ownerRepo->find($task->getOwner()->getId());
+            if ($owner instanceof Owner) {
+                $owner->removeTask($task);
+                $this->taskRepo->deleteTask($task);
+            }
         }
     }
 }

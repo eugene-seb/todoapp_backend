@@ -6,7 +6,7 @@ use App\Entity\Task;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use InvalidArgumentException;
 
 /**
  * @extends ServiceEntityRepository<Task>
@@ -42,7 +42,7 @@ class TaskRepository extends ServiceEntityRepository
     public function createTask(Task $task): void
     {
         if (!$task) {
-            throw new NotFoundHttpException("Task not found.");
+            throw new InvalidArgumentException("Task not found.");
         }
         $this->em->persist($task);
         $this->em->flush();
@@ -56,7 +56,7 @@ class TaskRepository extends ServiceEntityRepository
     public function deleteTask(Task $task): void
     {
         if (!$task) {
-            throw new NotFoundHttpException("Task not found.");
+            throw new InvalidArgumentException("Task not found.");
         }
         $this->em->remove($task);
         $this->em->flush();

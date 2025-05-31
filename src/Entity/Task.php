@@ -26,6 +26,10 @@ class Task
     #[ORM\Column(length: 255)]
     private ?string $priority = null;
 
+    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Owner $owner = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -82,6 +86,18 @@ class Task
     public function setPriority(string $priority): static
     {
         $this->priority = $priority;
+
+        return $this;
+    }
+
+    public function getOwner(): ?Owner
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?Owner $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

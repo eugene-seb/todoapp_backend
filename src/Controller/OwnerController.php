@@ -2,26 +2,26 @@
 
 namespace App\Controller;
 
-use App\Dto\TaskDto;
-use App\Form\TaskDtoForm;
-use App\Service\TaskService;
+use App\Dto\OwnerDto;
+use App\Form\OwnerDtoForm;
+use App\Service\OwnerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/task')]
-final class TaskController extends AbstractController
+#[Route(path: '/owner')]
+final class OwnerController extends AbstractController
 {
-    public function __construct(private readonly TaskService $taskService) {}
+    public function __construct(private readonly OwnerService $ownerService) {}
 
-    #[Route(path: '/all_tasks', name: 'task_alltasks', methods: ['GET'])]
-    public function getAllTasks(): JsonResponse
+    #[Route(path: '/all_owners', name: 'owner_allowners', methods: ['GET'])]
+    public function getAllOwners(): JsonResponse
     {
         try {
             return $this->json(
-                data: $this->taskService->getAllTasks(),
+                data: $this->ownerService->getAllOwners(),
                 status: Response::HTTP_OK
             );
         } catch (\Throwable $throwable) {
@@ -32,13 +32,13 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route(path: '/search_tasks', name: 'task_searchtasks', methods: ['GET'])]
-    public function searchTasks(Request $request): JsonResponse
+    #[Route(path: '/search_owner', name: 'owner_searchowner', methods: ['GET'])]
+    public function searchOwners(Request $request): JsonResponse
     {
         try {
-            $key = $request->query->get('key');
+            $username = $request->query->get('username');
             return $this->json(
-                data: $this->taskService->searchTasks($key),
+                data: $this->ownerService->searchOwner($username),
                 status: Response::HTTP_OK
             );
         } catch (\Throwable $throwable) {
@@ -49,19 +49,19 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route(path: '/create_task', name: 'task_createtask', methods: ['POST'])]
-    public function createTask(Request $request): JsonResponse
+    #[Route(path: '/create_owner', name: 'owner_createowner', methods: ['POST'])]
+    public function createOwner(Request $request): JsonResponse
     {
         try {
             $data = json_decode(
                 json: $request->getContent(),
                 associative: true
             );
-            $taskDto = new TaskDto();
+            $ownerDto = new OwnerDto();
 
             $form = $this->createForm(
-                type: TaskDtoForm::class,
-                data: $taskDto
+                type: OwnerDtoForm::class,
+                data: $ownerDto
             );
             $form->submit(
                 submittedData: $data,
@@ -69,11 +69,11 @@ final class TaskController extends AbstractController
             );
 
             if ($form->isValid()) {
-                $taskDto = $form->getData();
-                $this->taskService->createTask($taskDto);
+                $ownerDto = $form->getData();
+                $this->ownerService->createOwner($ownerDto);
 
                 return  $this->json(
-                    data: ['message' => 'Task created succesfully.'],
+                    data: ['message' => 'Owner created succesfully.'],
                     status: Response::HTTP_CREATED
                 );
             } else {
@@ -98,19 +98,19 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route(path: '/update_task/{taskId}', name: 'task_updatetask', methods: ['PUT', 'PATCH'])]
-    public function updateTask(int $taskId, Request $request): JsonResponse
+    #[Route(path: '/update_owner/{ownerId}', name: 'owner_updateowner', methods: ['PUT', 'PATCH'])]
+    public function updateOwner(int $ownerId, Request $request): JsonResponse
     {
         try {
             $data = json_decode(
                 json: $request->getContent(),
                 associative: true
             );
-            $taskDto = new TaskDto();
+            $ownerDto = new OwnerDto();
 
             $form = $this->createForm(
-                type: TaskDtoForm::class,
-                data: $taskDto
+                type: OwnerDtoForm::class,
+                data: $ownerDto
             );
             $form->submit(
                 submittedData: $data,
@@ -118,11 +118,11 @@ final class TaskController extends AbstractController
             );
 
             if ($form->isValid()) {
-                $taskDto = $form->getData();
-                $this->taskService->updateTask($taskId, $taskDto);
+                $ownerDto = $form->getData();
+                $this->ownerService->updateOwner($ownerId, $ownerDto);
 
                 return  $this->json(
-                    data: ['message' => 'Task updated succesfully.'],
+                    data: ['message' => 'Owner updated succesfully.'],
                     status: Response::HTTP_OK
                 );
             } else {
@@ -147,14 +147,14 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route(path: '/delete_task/{taskId}', name: 'task_deletetask', methods: ['DELETE'])]
-    public function deleteTask(int $taskId): JsonResponse
+    #[Route(path: '/delete_owner/{ownerId}', name: 'owner_deleteowner', methods: ['DELETE'])]
+    public function deleteOwner(int $ownerId): JsonResponse
     {
         try {
-            $this->taskService->deleteTask($taskId);
+            $this->ownerService->deleteOwner($ownerId);
 
             return $this->json(
-                ['message' => 'Task deleted.'],
+                ['message' => 'Owner deleted.'],
                 status: Response::HTTP_OK
             );
         } catch (\Throwable $throwable) {
