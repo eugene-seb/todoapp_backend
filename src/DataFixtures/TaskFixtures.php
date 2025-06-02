@@ -2,14 +2,14 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Owner;
-use App\Entity\Task;
-use App\Repository\OwnerRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use App\Entity\Task;
+use App\Repository\OwnerRepository;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Faker\Factory;
 
-class AppFixtures extends Fixture
+class TaskFixtures extends Fixture implements DependentFixtureInterface
 {
     public function __construct(private readonly OwnerRepository $ownerRepo) {}
 
@@ -17,29 +17,23 @@ class AppFixtures extends Fixture
     {
         $faker = Factory::create();
 
-        for ($i = 0; $i < 5; $i++) {
-            $owner = new Owner();
-            $owner->setUsername($faker->userName())
-                ->setPassword($faker->password());
-
-            $manager->persist($owner);
-        }
-
-        $manager->flush(); // I need to do that in order for Doctrine to generate the ID of Doctrine
+        $ownerList = $this->ownerRepo->findAll();
 
         for ($i = 0; $i < 20; $i++) {
-            $owner = $this->ownerRepo->findOneOwner();
-
             $task = new Task();
             $task->setTitle($faker->title())
                 ->setDescription($faker->text())
                 ->setStatus($faker->boolean())
                 ->setPriority($faker->text(10))
-                ->setOwner($owner);
+                ->setOwner($faker->randomElement($ownerList));
 
             $manager->persist($task);
         }
-
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [OwnerFixtures::class];
     }
 }
