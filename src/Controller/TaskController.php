@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 
 #[Route(path: '/task')]
 final class TaskController extends AbstractController
@@ -98,7 +99,7 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route(path: '/update_task/{taskId}', name: 'task_updatetask', methods: ['PUT', 'PATCH'])]
+    #[Route(path: '/update_task/{taskId}', name: 'task_updatetask', requirements: ['taskId' => Requirement::DIGITS], methods: ['PUT', 'PATCH'])]
     public function updateTask(int $taskId, Request $request): JsonResponse
     {
         try {
@@ -147,7 +148,7 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route(path: '/delete_task/{taskId}', name: 'task_deletetask', methods: ['DELETE'])]
+    #[Route(path: '/delete_task/{taskId}', name: 'task_deletetask', requirements: ['taskId' => Requirement::DIGITS], methods: ['DELETE'])]
     public function deleteTask(int $taskId): JsonResponse
     {
         try {

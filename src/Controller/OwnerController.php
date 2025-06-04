@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 
 #[Route(path: '/owner')]
 final class OwnerController extends AbstractController
@@ -81,7 +82,7 @@ final class OwnerController extends AbstractController
         }
     }
 
-    #[Route(path: '/update_owner/{ownerId}', name: 'owner_updateowner', methods: ['PUT', 'PATCH'])]
+    #[Route(path: '/update_owner/{ownerId}', name: 'owner_updateowner', requirements: ['ownerId' => Requirement::DIGITS], methods: ['PUT', 'PATCH'])]
     public function updateOwner(int $ownerId, Request $request): JsonResponse
     {
         try {
@@ -130,7 +131,7 @@ final class OwnerController extends AbstractController
         }
     }
 
-    #[Route(path: '/delete_owner/{ownerId}', name: 'owner_deleteowner', methods: ['DELETE'])]
+    #[Route(path: '/delete_owner/{ownerId}', name: 'owner_deleteowner', requirements: ['ownerId' => Requirement::DIGITS], methods: ['DELETE'])]
     public function deleteOwner(int $ownerId): JsonResponse
     {
         try {
